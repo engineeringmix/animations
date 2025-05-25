@@ -10,37 +10,34 @@
       // Register ScrollTrigger plugin
       gsap.registerPlugin(ScrollTrigger);
 
-      // 1. Hero section fade out on scroll up
+      // Hero Section Fade Out (no flicker)
       gsap.to(".hero-section[data-type='type-2'] > [class*='ct-container']", {
         opacity: 0,
-        scale: 0.95,
-        duration: 2,
-        ease: "power2.out",
+        scale: 0.98, // subtle instead of sudden change
+        duration: 3,
+        ease: "none", // linear scrubbing
         scrollTrigger: {
           trigger: ".hero-section[data-type='type-2']",
-          start: "top center",    // When top of hero hits center of viewport
-          end: "bottom top",      // Ends when bottom of hero hits top of viewport
-          scrub: true             // Smoothly animate as user scrolls
+          start: "top center",     // Start animating when top of hero hits center
+          end: "bottom 10%",       // End smoothly before fully scrolled out
+          scrub: true,             // Smoothly animate with scroll
+          toggleActions: "play none none reverse"
         }
       });
 
-      // 2. Header image animation for single blog post
-      gsap.fromTo(
-        "[data-prefix='single_blog_post'] .hero-section[data-type='type-2']",
-        { opacity: 1, scale: 1 },
-        {
-          opacity: 0,
-          scale: 0.8,
-          duration: 1.5,
-          ease: "power2.inOut",
-          scrollTrigger: {
-            trigger: "[data-prefix='single_blog_post'] .hero-section[data-type='type-2']",
-            start: "top center",
-            end: "bottom top",
-            scrub: true
-          }
+      // Optional: Add this only if you want content to fade in first
+      gsap.from(".hero-section[data-type='type-2'] .hero-content", {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".hero-section[data-type='type-2']",
+          start: "top 90%",
+          end: "top 60%",
+          toggleActions: "play none none reverse"
         }
-      );
+      });
 
       // 3. Fade-in animation for Gutenberg images
       document.querySelectorAll('.wp-block-image img').forEach(img => {
