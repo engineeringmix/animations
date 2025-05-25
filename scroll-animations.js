@@ -1,57 +1,65 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Helper function to apply animations
-  const applyFadeAnimation = (element, isVisible) => {
-    if (isVisible) {
-      element.style.opacity = 1;
-      element.style.transform = 'scale(1)';
-    } else {
-      element.style.opacity = 0;
-      element.style.transform = 'scale(0)';
-    }
-  };
+<!-- Load GSAP and ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js " defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js " defer></script>
 
-  // 1. Fade-out animation for hero section type 2
-  const heroContainer = document.querySelector('.hero-section[data-type="type-2"] > [class*="ct-container"]');
-  if (heroContainer) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        applyFadeAnimation(entry.target, entry.isIntersecting);
-      });
-    }, { threshold: 0.5 });
+<script>
+  // Wait for GSAP and DOM to load
+  window.addEventListener('DOMContentLoaded', function () {
+    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 
-    observer.observe(heroContainer);
-  }
+      // Register ScrollTrigger plugin
+      gsap.registerPlugin(ScrollTrigger);
 
-  // 2. Header image animation for single blog post hero section
-  const headerImages = document.querySelectorAll('[data-prefix="single_blog_post"] .hero-section[data-type="type-2"]');
-  headerImages.forEach(el => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        applyFadeAnimation(entry.target, entry.isIntersecting);
-      });
-    }, { threshold: 0.7 });
-
-    observer.observe(el);
-  });
-
-  // 3. Fade-in animation for Gutenberg images
-  document.querySelectorAll('.wp-block-image img').forEach(img => {
-    img.style.opacity = 0;
-    img.style.transform = 'translateY(20px) scale(0.8)';
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          img.style.transition = 'all 0.6s ease-out';
-          img.style.opacity = 1;
-          img.style.transform = 'translateY(0) scale(1)';
-        } else {
-          img.style.opacity = 0; // Optional: Hide when not in viewport
-          img.style.transform = 'translateY(20px) scale(0.8)';
+      // 1. Hero section fade out on scroll up
+      gsap.to(".hero-section[data-type='type-2'] > [class*='ct-container']", {
+        opacity: 0,
+        scale: 0.95,
+        duration: 2,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".hero-section[data-type='type-2']",
+          start: "top center",    // When top of hero hits center of viewport
+          end: "bottom top",      // Ends when bottom of hero hits top of viewport
+          scrub: true             // Smoothly animate as user scrolls
         }
       });
-    }, { rootMargin: '-100px 0px 0px 0px' });
 
-    observer.observe(img);
+      // 2. Header image animation for single blog post
+      gsap.fromTo(
+        "[data-prefix='single_blog_post'] .hero-section[data-type='type-2']",
+        { opacity: 1, scale: 1 },
+        {
+          opacity: 0,
+          scale: 0.8,
+          duration: 1.5,
+          ease: "power2.inOut",
+          scrollTrigger: {
+            trigger: "[data-prefix='single_blog_post'] .hero-section[data-type='type-2']",
+            start: "top center",
+            end: "bottom top",
+            scrub: true
+          }
+        }
+      );
+
+      // 3. Fade-in animation for Gutenberg images
+      document.querySelectorAll('.wp-block-image img').forEach(img => {
+        gsap.from(img, {
+          opacity: 0,
+          y: 40,
+          scale: 0.9,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: img,
+            start: "top 90%",
+            toggleActions: "play none none reverse"
+          }
+        });
+      });
+
+    } else {
+      console.error("GSAP or ScrollTrigger not loaded.");
+    }
   });
-});
+</script>
