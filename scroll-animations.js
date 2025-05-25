@@ -1,5 +1,3 @@
-// scroll-animations.js
-
 document.addEventListener("DOMContentLoaded", function () {
   // Helper function to apply Intersection Observer
   function applyObserver(elements, options, onEnter, onExit) {
@@ -7,9 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            onEnter(entry.target);
+            onEnter(entry.target); // Apply styles when entering viewport
           } else {
-            onExit(entry.target);
+            onExit(entry.target); // Apply styles when exiting viewport
           }
         });
       }, options);
@@ -18,18 +16,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Hero section fade-out
+  // 1. Fade-out animation for hero section type 2
   const heroContainer = document.querySelector('.hero-section[data-type="type-2"] > [class*="ct-container"]');
   if (heroContainer) {
-    applyObserver([heroContainer], { threshold: 0.5 },
-      target => target.style.opacity = 1,
-      target => target.style.opacity = 0
+    applyObserver([heroContainer], { threshold: 0.5 }, 
+      target => {
+        target.style.opacity = 1; // Show when entering viewport
+      },
+      target => {
+        target.style.opacity = 0; // Hide when exiting viewport
+      }
     );
   }
 
-  // Header image animation for single blog post
+  // 2. Header image animation for single blog post hero section
   const headerImages = document.querySelectorAll('[data-prefix="single_blog_post"] .hero-section[data-type="type-2"]');
-  applyObserver(headerImages, { threshold: 0.7 },
+  applyObserver(headerImages, { threshold: 0.7 }, 
     target => {
       target.style.opacity = 1;
       target.style.transform = 'scale(1)';
@@ -40,11 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
-  // Fade-in animation for Gutenberg images
-  document.querySelectorAll('.wp-block-image img').forEach(img => {
+  // 3. Fade-in animation for Gutenberg images
+  const gutenbergImages = document.querySelectorAll('.wp-block-image img');
+  gutenbergImages.forEach(img => {
     img.style.opacity = 0;
     img.style.transform = 'translateY(20px) scale(0.8)';
-
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -52,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
           img.style.opacity = 1;
           img.style.transform = 'translateY(0) scale(1)';
         } else {
-          img.style.opacity = 0;
+          img.style.opacity = 0; // Optional: Hide when not in viewport
           img.style.transform = 'translateY(20px) scale(0.8)';
         }
       });
